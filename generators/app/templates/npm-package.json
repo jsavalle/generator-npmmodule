@@ -1,0 +1,12 @@
+{
+  "name": "<%= moduleName %>",
+  "description": "<%= moduleDescription %>",
+  "version": "0.1.0",
+  "main": "lib/index.js",
+  "author": "<%= githubUsername %>",
+  "repository": "<%= githubUsername %>/<%= moduleName %>",
+  "license": "<%= license %>",
+  "scripts": {
+    "doc": "jsdoc2md --template .docgen.hbs --files index.js > README.md"
+  }
+}

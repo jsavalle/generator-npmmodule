@@ -1,5 +1,6 @@
 "use strict";
 const Generator = require("yeoman-generator");
+const https = require("https");
 const chalk = require("chalk");
 const yosay = require("yosay");
 
@@ -44,22 +45,20 @@ const QUESTIONS = [
       "MPL-2.0",
       "Unlicense"
     ]
-  },
-  {
-    type: "list",
-    name: "pkgTool",
-    message: "Choose package tool you want to use.",
-    default: "npm",
-    choices: ["npm", "yarn"]
-  },
-  {
-    type: "confirm",
-    name: "shouldInstallDependencies",
-    message:
-      "Do you want to install dependencies immediately after module generated?",
-    default: true
   }
 ];
+
+const LICENSE_TEMPLATE_URL =
+  "https://raw.githubusercontent.com/github/choosealicense.com/gh-pages/_licenses/";
+
+function fetchLicense(license, cb) {
+  let licenseURL = `${LICENSE_TEMPLATE_URL}${license.toLowerCase()}.txt`;
+  https.get(licenseURL, res => {
+    let tpl = "";
+    res.on("data", chunk => (tpl += chunk));
+    res.on("end", () => cb(tpl));
+  });
+}
 
 module.exports = class extends Generator {
   prompting() {
@@ -80,10 +79,6 @@ module.exports = class extends Generator {
 
   writing() {
     this.fs.copy(
-      this.templatePath("babelrc"),
-      this.destinationPath(".babelrc")
-    );
-    this.fs.copy(
       this.templatePath("editorconfig"),
       this.destinationPath(".editorconfig")
     );
@@ -95,9 +90,38 @@ module.exports = class extends Generator {
       this.templatePath("npmignore"),
       this.destinationPath(".npmignore")
     );
+    this.fs.copyTpl(
+      this.templatePath("README.md"),
+      this.destinationPath(".docgen.hbs"),
+      this.props
+    );
+
+    this.fs.copyTpl(
+      this.templatePath("npm-package.json"),
+      this.destinationPath("package.json"),
+      this.props
+    );
+
+    this.fs.copyTpl(
+      this.templatePath("index.js"),
+      this.destinationPath("index.js"),
+      this.props
+    );
+
+    let done = this.async();
+    fetchLicense(this.props.license, tpl => {
+      let content = tpl
+        .replace(/-+[\d\D]*?-+\n\n/, "")
+        .replace(/\[year\]/g, new Date().getFullYear())
+        .replace(/\[fullname\]/g, this.props.fullName);
+      this.fs.write(this.destinationPath("LICENSE"), content);
+      done();
+    });
   }
 
   install() {
-    this.installDependencies();
+    this.installDependencies({ bower: false, npm: true }).then(() => {
+      console.log("Done!");
+    });
   }
 };

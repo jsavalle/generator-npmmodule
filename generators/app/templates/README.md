@@ -28,3 +28,8 @@ import <%= moduleName %> from '<%= moduleName %>';
 ## License
 
 <%= license %>
+
+## API Documentation
+
+{{>main}}
+
