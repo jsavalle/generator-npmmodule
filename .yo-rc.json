@@ -1,0 +1,9 @@
+{
+  "generator-node": {
+    "promptValues": {
+      "authorName": "JS",
+      "authorEmail": "hello@jsavalle.com",
+      "authorUrl": "https://jsavalle.com"
+    }
+  }
+}
