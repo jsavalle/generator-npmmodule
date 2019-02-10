@@ -65,9 +65,7 @@ module.exports = class extends Generator {
     // Have Yeoman greet the user.
     this.log(
       yosay(
-        `Welcome to the exquisite ${chalk.red(
-          "generator-npmmodule"
-        )} generator!`
+        `Welcome to the exquisite ${chalk.red("Basic NPM Module")} generator!`
       )
     );
 
@@ -116,12 +114,6 @@ module.exports = class extends Generator {
         .replace(/\[fullname\]/g, this.props.fullName);
       this.fs.write(this.destinationPath("LICENSE"), content);
       done();
-    });
-  }
-
-  install() {
-    this.installDependencies({ bower: false, npm: true }).then(() => {
-      console.log("Done!");
     });
   }
 };
